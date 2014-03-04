@@ -30,7 +30,7 @@
     model: Event,
     url: '/featuredEvents'
   });
-  
+
   var NewReservationView = Backbone.View.extend({
     el: $('#reservation'),
     initialize: function() {
@@ -62,10 +62,11 @@
   });
 
   var FeaturedEventsView = Backbone.View.extend({
-    featuredEvents: new FeaturedEvents(),
     render: function() {
-      var template = _.template($('#featured-events-template').html(), 
-        {featuredEvents: this.collection.models}
+      var self = this;
+      var template = _.template(
+        $('#featured-events-template').html(), 
+        {featuredEvents: this.featuredEvents.models}
       );
       this.$el.html(template);
       return this;
@@ -73,14 +74,16 @@
   });
 
   var EventsListView = Backbone.View.extend({
-    render: function() {
-      this.events = new Events();
+    initialize: function() {
+      var self = this;
+      this.events = new Events;
       this.events.fetch({
-        success: function() {
-          var template = _.template($('#events-list-template').html(), {});
-          this.$el.html(template);
-        }
+        success: function() {}
       });
+    },
+    render: function() {
+      var self = this;
+      var template = _.template($('#events-list-template').html(), {});
       return this;
     }
   });
@@ -89,30 +92,24 @@
     el: $('#content'),
     initialize: function() {
       var self = this;
+      this.featuredEventsView = new FeaturedEventsView();
+      this.featuredEventsView.featuredEvents = new FeaturedEvents();
+      //this.eventsListView = new EventsListView();
       this.featuredEventsView.featuredEvents.fetch({
-        success: function(featuredEvents) {
-          this.eventsListView.events.fetch({
-            success: function(events) {
-              self.render();
-            }
-          })
+        success: function() {
+          self.render();
         }
       });
     },
-    featuredEventsView: new FeaturedEventsView(),
-    eventsListView: new EventsListView(),
     render: function() {
       var template = _.template($('#events-home-template').html(), {});
-      this.$el.html(template);
+      this.$el.html(template); 
       this.featuredEventsView.setElement(this.$('#featured-events')).render();
-      this.eventsListView.setElement(this.$('#events-list')).render();
+      //this.eventsListView.setElement(this.$('#events-list')).render();
       return this;
     }
   });
 
   var eventsHomeView = new EventsHomeView();
-
-  //var timeSlotsView = new TimeSlotsView();
-  //var newReservationView = new NewReservationView();
 
 })(jQuery);
