@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Layton Avenue Baptist Church - Volunteer Registration</title>
+    <title>Layton Avenue Baptist Church - Event Registration</title>
 
     <!-- Bootstrap -->
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
@@ -28,24 +28,43 @@
       </div>
     </nav>
 
-    <div class="container-fluid" id="content"></div>
+    <div class="container-fluid">
+      <div id="content"></div>
+    </div>
 
-    <script type="text/template" id="events-template">
+    <script type="text/template" id="events-home-template">
       <div class="row">
         <div class="col-md-12">
-          <% var template = _.template($('#featured-event-template').html());
-          $(this.el).html(template({})); %>
+          <div id="featured-events"></div>
         </div>
       </div>
       <div class="row">
         <div class="col-md-12">
-          <h4>Click on an event for more information</h4>
+          <div id="events-list"></div>
         </div>
       </div>
     </script>
 
-    <script type="text/template" id="featured-event-template">
-      <img src="./awalktothecrosspromo.png" alt="A Walk To The Cross Promo" class="img-rounded">
+    <script type="text/template" id="featured-events-template">
+      <div id="featured-events-carousel" class="carousel slide" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <% _.each(featuredEvents, function(featuredEvent, index) { %>
+          <li data-target="featured-events-carousel" data-slide-to="<%= index %>" <% if (index === 0) { %> class="active" <%} %>>
+        <% }); %>
+      </ol>
+
+      <div class="corousel-inner">
+        <% _.each(featuredEvents, function(featuredEvent, index) { %>
+          <div class="item <% if (index === 0) { %>active<%}%>"> 
+            <img src="<%= featuredEvent.imageURL %>" alt="<%= featuredEvent.name%>" class="img-rounded">
+          </div>
+        <%});%>     
+      </div>
+
+    </script>
+
+    <script type="text/template" id="events-list-template">
+      <br>
     </script>
 
     <script type="text/template" id="newreservation-template">

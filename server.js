@@ -30,27 +30,41 @@ var Performance = mongoose.model('Performance');
 var Event = mongoose.model('Event');
 var TimeSlot = mongoose.model('TimeSlot');
 
-app.get('/', routes.index);
+var sendJSONFile = function(err, res, data) {
+  if (err) console.log(err);
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(data));
+}
+
+app.get('/', function(req, res) {
+  res.sendfile(path.join(__dirname, 'public/index.html'));
+});
+
 app.get('/reservations', function(req, res) {
   Reservation.find().exec(function(err, data) {
-    if (err) console.log(err);
-    res.send(JSON.stringify(data));
+    sendJSONFile(err, res, data);
   });
 });
+
 app.get('/events', function(req, res) {
   Event.find().sort('startDate').exec(function(err, data) {
-    if (err) console.log(err);
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(data));
+    sendJSONFile(err, res, data);
   });
 });
+
+app.get('/featuredEvents', function(req, res) {
+  Event.find({featured: true}).sort('startDate').exec(function(err, data) {
+    sendJSONFile(err, res, data);
+  });
+});
+ 
 app.get('/events/:eventid/performances', function(req, res) {
-  Performance.find({event: req.params.eventid}).sort('startTime').exec(function(err, data) {
-    if (err) console.log(err);
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(data));
+  Performance.find({event: req.params.eventid})
+    .sort('startTime').exec(function(err, data) {
+      sendJSONFile(err, res, data);
   });
 });
+
 app.get('/timeSlots', function(req, res) {
   TimeSlot.find().exec(function(err, data) {
     if (err) console.log(err);

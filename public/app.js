@@ -1,6 +1,12 @@
 (function($) {
+
+  var Reservation = Backbone.Model.extend({});
+
+  var Reservations = Backbone.Collection.extend({
+    model: Reservation
+  });
  
-  var TimeSlot = Backbone.Model.extend({
+  var Performance = Backbone.Model.extend({
     timeFormatted: function() {
       return moment(this.get('time')).format('h:mmA');
     },
@@ -8,12 +14,23 @@
       return 6 - this.get('reservations').length;
     }
   });
+
+  var Performances = Backbone.Collection.extend({
+    model: Performance
+  });
   
-  var TimeSlots = Backbone.Collection.extend({
-    model: TimeSlot,
-    url: '/timeSlots'
+  var Event = Backbone.Model.extend({});
+
+  var Events = Backbone.Collection.extend({
+    model: Event,
+    url: '/events'
   });
 
+  var FeaturedEvents = Backbone.Collection.extend({
+    model: Event,
+    url: '/featuredEvents'
+  });
+  
   var NewReservationView = Backbone.View.extend({
     el: $('#reservation'),
     initialize: function() {
@@ -22,6 +39,7 @@
     render: function() {
       var template = _.template($("#newreservation-template").html(), {});
       this.$el.html(template);
+      return this;
     }
   }); 
 
@@ -32,28 +50,67 @@
       this.collection = new TimeSlots;
       this.collection.fetch({
         success: function(collection) {
-          self.render();
         }
       });
     },
     render: function() {
-      var template = _.template($("#timeslots-template").html(), {timeSlots: this.collection.models});
+      var template = _.template($("#timeslots-template").html(), 
+        {timeSlots: this.collection.models});
       this.$el.html(template);
+      return this;
     }
   });
 
-  var EventsView = Backbone.View.extend({
+  var FeaturedEventsView = Backbone.View.extend({
+    featuredEvents: new FeaturedEvents(),
+    render: function() {
+      var template = _.template($('#featured-events-template').html(), 
+        {featuredEvents: this.collection.models}
+      );
+      this.$el.html(template);
+      return this;
+    }
+  });
+
+  var EventsListView = Backbone.View.extend({
+    render: function() {
+      this.events = new Events();
+      this.events.fetch({
+        success: function() {
+          var template = _.template($('#events-list-template').html(), {});
+          this.$el.html(template);
+        }
+      });
+      return this;
+    }
+  });
+
+  var EventsHomeView = Backbone.View.extend({
     el: $('#content'),
     initialize: function() {
-      this.render();
+      var self = this;
+      this.featuredEventsView.featuredEvents.fetch({
+        success: function(featuredEvents) {
+          this.eventsListView.events.fetch({
+            success: function(events) {
+              self.render();
+            }
+          })
+        }
+      });
     },
+    featuredEventsView: new FeaturedEventsView(),
+    eventsListView: new EventsListView(),
     render: function() {
-      var template = _.template($('#events-template').html(), {});
+      var template = _.template($('#events-home-template').html(), {});
       this.$el.html(template);
+      this.featuredEventsView.setElement(this.$('#featured-events')).render();
+      this.eventsListView.setElement(this.$('#events-list')).render();
+      return this;
     }
   });
 
-  var eventsView = new EventsView();
+  var eventsHomeView = new EventsHomeView();
 
   //var timeSlotsView = new TimeSlotsView();
   //var newReservationView = new NewReservationView();
