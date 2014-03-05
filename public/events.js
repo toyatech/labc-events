@@ -1,13 +1,16 @@
 EventsApp = new Backbone.Marionette.Application();
 
 EventsApp.addRegions({
-  contentRegion: "#content"
+  headerRegion: '#header',
+  contentRegion: '#content',
+  footerRegion: '#footer'
 });
 
-Performance = Backbone.Model.extend({});
+Event = Backbone.Model.extend({});
 
-Performances = Backbone.Collection.extend({
-  model: Performance
+Events = Backbone.Collection.extend({
+  model: Event,
+  url: '/events'
 });
 
 PerformanceView = Backbone.Marionette.ItemView.extend({
@@ -30,6 +33,22 @@ PerformancesView = Backbone.Marionette.CompositeView.extend({
   }
 });
 
+EventsView = Backbone.Marionette.CompositeView.extend(
+  tagName:
+
+FeaturedEventsIndicatorsView = Backbone.Marionette.CollectionView.extend({
+  
+
+FeaturedEventsView = Backbone.Marionette.CompositeView.extend({
+  tagName: 'div',
+  id: 'featured-events',
+  className: 'carousel slide',
+  attributes: {
+    'data-ride': 'carousel'
+  }
+});
+  
+
 EventsApp.addInitializer(function(options) {
   var performancesView = new PerformancesView({
     collection: options.performances
@@ -38,6 +57,6 @@ EventsApp.addInitializer(function(options) {
 });
 
 $(document).ready(function() {
-  var performances = new Performances();
+  var events = new Events();
   EventsApp.start({performances: performances});
 });

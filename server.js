@@ -58,21 +58,6 @@ app.get('/featuredEvents', function(req, res) {
   });
 });
  
-app.get('/events/:eventid/performances', function(req, res) {
-  Performance.find({event: req.params.eventid})
-    .sort('startTime').exec(function(err, data) {
-      sendJSONFile(err, res, data);
-  });
-});
-
-app.get('/timeSlots', function(req, res) {
-  TimeSlot.find().exec(function(err, data) {
-    if (err) console.log(err);
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(data));
-  });
-});
-
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });

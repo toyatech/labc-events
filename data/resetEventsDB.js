@@ -24,10 +24,11 @@ function getPerformances(time, end) {
 function getPerformanceSets(dates, time, end) {
   var performanceSets = [];
   dates.forEach(function(date) {
-    var start = new Date(date);
+    var time = new Date(date);
+    var start = new Date(time);
     start.setHours(start.getHours() + 19);
-    var end = new Date(date);
-    end.setHours(start.getHours() + 21);
+    var end = new Date(time);
+    end.setHours(end.getHours() + 21);
     var performanceSet = {date:date};
     performanceSet.performances = getPerformances(start, end);
     performanceSets.push(performanceSet);
