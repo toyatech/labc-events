@@ -20,7 +20,7 @@ PerformanceView = Backbone.Marionette.ItemView.extend({
 });
 
 PerformancesView = Backbone.Marionette.CompositeView.extend({
-  tagName: "table",
+  tagName: 'table',
   id: 'performances',
   className: 'table table-condensed',
   template: '#performances',
@@ -32,6 +32,26 @@ PerformancesView = Backbone.Marionette.CompositeView.extend({
     collectionView.$('tbody').append(itemView.el);
   }
 });
+
+PerformanceSetView = Backbone.Marionette.ItemView.extend({
+  tagName: 'div',
+  className: 'col-md-2',
+  template: 'performance-set'
+});
+
+PerformanceSetsView = Backbone.Marionette.CompositeView.extend({
+  tagName: 'div',
+  id: 'performanceSets',
+  className: 'row',
+  itemView: PerformanceSetView,
+  initialize: function() {
+    this.listenTo(this.collection, "sort", this.renderCollection);
+  },
+  appendHtml: function(collectionView, itemView) {
+    collectionView.$('div').append(itemView.el);
+  }
+});
+
 
 EventsView = Backbone.Marionette.CompositeView.extend(
   tagName:
