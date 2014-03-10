@@ -4,48 +4,67 @@ App.addRegions({
   content: '#content'
 });
 
-Event = Backbone.Model.extend({});
-Events = Backbone.Collection.extend({
-  model: Event
+Performance = Backbone.Model.extend({});
+
+Performances = Backbone.Collection.extend({
+  model: Performance
 });
 
-EventHomeLayout = Backbone.Marionette.Layout.extend({
-  el: '#content',
-  template: '#event-home-template',
-  regions: {
-    eventImage: '#event-image',
-    reservationForm: '#reservation-form',
-    performanceSets: '#performance-sets'
-  }
+PerformanceSet = Backbone.Model.extend({
+  formattedDate: function() { return moment(new Date(this.date)).format('dddd, MMMM Do'); }
 });
 
-PerformanceSetView = Backbone.Marionette.ItemView.extend({
-  tagName 'div',
-  className 'col-md-2'
+PerformanceSets = Backbone.Collection.extend({
+  model: PerformanceSet,
+  url: '/performanceSets'
 });
-
-PerformanceSetsView = Backbone.Marionette.CompositeView.extend({
-  tagName: 
 
 PerformanceView = Backbone.Marionette.ItemView.extend({
   template: '#performance-template',
-  tagName: 'tr',
-  className: 'performance'
+  tagName: 'tr'
 });
 
-PerformacnesView = Backbone.Marionette.CompositeView.extend({
-  tagName: 'table',
-  id: function() { },
-  className: 'table-stripped table-bordered',
+PerformancesView = Backbone.Marionette.CompositeView.extend({
+  tagName: "table",
+  className: "table table-condensed",
+  template: "#performances-template",
   itemView: PerformanceView,
-  initializeL function() {
-    this.listenTo(this.collectionView, "sort", this.renderCollection);
+  initialize: function() {
+    this.listenTo(this.collection, "sort", this.renderCollection);
+  }, 
+  appendHtml: function(collectionView, itemView){
+    collectionView.$("tbody").append(itemView.el);
+  }
+});
+
+PerformanceSetView = Backbone.Marionette.CompositeView.extend({
+  className: 'col-md-2',
+  template: '#performance-set-template',
+  itemView: PerformancesView,
+  initialize: function() {
+    this.listenTo(this.collection, "sort", this.renderCollection);
   },
   appendHtml: function(collectionView, itemView) {
-    collectionView.$('tbody').append(itemView.el);
+    collectionView.append(itemView.el);
   }
 });
 
 App.addInitializer(function(options) {
-  var eventHomeLayout = EventHomeLayout();
-  var performanceSetsView = PerformanceSetsView();
+  var performanceSetView = new PerformanceSetView({
+    collection: options.performanceSets
+  });
+  _.each(performanceSetView.collection.models, function(model) {
+    alert(JSON.stringify(model.formattedDate));
+  });
+  App.content.show(performanceSetView);
+});
+
+$(document).ready(function() {
+  var performanceSets = new PerformanceSets();
+  performanceSets.fetch({
+    success: function(collection) {
+      //alert(JSON.stringify(collection));
+      App.start({performanceSets: collection});
+    }
+  });
+});

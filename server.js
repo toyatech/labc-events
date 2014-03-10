@@ -26,9 +26,7 @@ mongoose.connect("localhost", "labc-events", 27017);
 require('./models');
 
 var Reservation = mongoose.model('Reservation');
-var Performance = mongoose.model('Performance');
 var Event = mongoose.model('Event');
-var TimeSlot = mongoose.model('TimeSlot');
 
 var sendJSONFile = function(err, res, data) {
   if (err) console.log(err);
@@ -43,6 +41,12 @@ app.get('/', function(req, res) {
 app.get('/reservations', function(req, res) {
   Reservation.find().exec(function(err, data) {
     sendJSONFile(err, res, data);
+  });
+});
+
+app.get('/performanceSets', function(req, res) {
+  Event.findOne({ 'name': 'A Walk to the Cross' }, 'performanceSets', function (err, data) {
+    sendJSONFile(err, res, data.performanceSets);
   });
 });
 
